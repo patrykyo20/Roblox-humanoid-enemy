@@ -1,0 +1,45 @@
+local NPC = script.Parent
+local debounce = false
+
+NPC.NPCHumanoid.Touched:Connect(function(hit)
+	if hit and game.Players:GetPlayerFromCharacter(hit.Parent) then
+		if debounce == false then
+			debounce = true
+			hit.Parent.Humanoid:TakeDamage(25)
+			wait(.25)
+			debounce = false
+		end
+	end
+end)
+
+function FindPlayer(Position)
+	local List = game.Workspace:GetChildren()
+	local Torso = nil
+	local Distance = 50
+	local HumanoidRootPart = nil
+	local Humanoid = nil
+	local Player = nil
+
+	for i = 1, #List do
+		Player = List[i]
+		if (Player.ClassName == "Model") and (Player ~= script.Parent) then
+			HumanoidRootPart = Player:FindFirstChild("HumanoidRootPart")
+			Humanoid = Player:FindFirstChild("Humanoid")
+			if (HumanoidRootPart ~= nil) and (Humanoid ~= nil) and (Humanoid.Health > 0) then
+				if (HumanoidRootPart.Position - Position).Magnitude < Distance then
+					Torso = HumanoidRootPart
+					Distance = (HumanoidRootPart.Position - Position).Magnitude
+				end
+			end
+		end
+	end
+	return Torso
+end
+
+while true do
+	wait(1)
+	local Target = FindPlayer(script.Parent.HumanoidRootPart.Position)
+	if Target ~= nil then
+		script.Parent.NPCHumanoid:MoveTo(Target.Position, Target)
+	end
+end
